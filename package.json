@@ -1,0 +1,56 @@
+{
+  "name": "@meetopenbot/remotion",
+  "version": "0.1.1",
+  "description": "OpenBot agent plugin that generates videos from natural language using Remotion.",
+  "type": "module",
+  "main": "dist/index.js",
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@ai-sdk/anthropic": "^3.0.81",
+    "@ai-sdk/openai": "^3.0.68",
+    "@meetopenbot/plugin-sdk": "^0.1.2",
+    "@modelcontextprotocol/sdk": "^1.6.0",
+    "@remotion/animation-utils": "^4.0.473",
+    "@remotion/bundler": "^4.0.473",
+    "@remotion/captions": "^4.0.473",
+    "@remotion/fonts": "^4.0.473",
+    "@remotion/gif": "^4.0.473",
+    "@remotion/google-fonts": "^4.0.473",
+    "@remotion/layout-utils": "^4.0.473",
+    "@remotion/light-leaks": "^4.0.473",
+    "@remotion/lottie": "^4.0.473",
+    "@remotion/media": "^4.0.473",
+    "@remotion/media-utils": "^4.0.473",
+    "@remotion/motion-blur": "^4.0.473",
+    "@remotion/noise": "^4.0.473",
+    "@remotion/paths": "^4.0.473",
+    "@remotion/preload": "^4.0.473",
+    "@remotion/renderer": "^4.0.473",
+    "@remotion/sfx": "^4.0.473",
+    "@remotion/shapes": "^4.0.473",
+    "@remotion/tailwind-v4": "^4.0.473",
+    "@remotion/transitions": "^4.0.473",
+    "@remotion/zod-types": "^4.0.473",
+    "ai": "^6.0.197",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7",
+    "remotion": "^4.0.473",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.2",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "typescript": "^6.0.3"
+  }
+}
