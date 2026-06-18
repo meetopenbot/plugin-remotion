@@ -1,6 +1,6 @@
 {
   "name": "@meetopenbot/remotion",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "OpenBot agent plugin that generates videos from natural language using Remotion.",
   "publishConfig": {
     "access": "public"
@@ -21,7 +21,7 @@
   "dependencies": {
     "@ai-sdk/anthropic": "^3.0.81",
     "@ai-sdk/openai": "^3.0.68",
-    "@meetopenbot/plugin-sdk": "^0.1.2",
+    "@meetopenbot/plugin-sdk": "^0.1.4",
     "@modelcontextprotocol/sdk": "^1.6.0",
     "@remotion/animation-utils": "^4.0.473",
     "@remotion/bundler": "^4.0.473",

@@ -100,19 +100,19 @@ export default definePlugin({
           const apiKeyField =
             provider === 'anthropic'
               ? {
-                  id: 'anthropicApiKey',
-                  label: 'Anthropic API Key',
-                  type: 'text' as const,
-                  placeholder: 'sk-ant-...',
-                  required: true,
-                }
+                id: 'anthropicApiKey',
+                label: 'Anthropic API Key',
+                type: 'text' as const,
+                placeholder: 'sk-ant-...',
+                required: true,
+              }
               : {
-                  id: 'openaiApiKey',
-                  label: 'OpenAI API Key',
-                  type: 'text' as const,
-                  placeholder: 'sk-...',
-                  required: true,
-                };
+                id: 'openaiApiKey',
+                label: 'OpenAI API Key',
+                type: 'text' as const,
+                placeholder: 'sk-...',
+                required: true,
+              };
 
           yield agentOutput({
             agentId: context.agentId,
@@ -153,6 +153,7 @@ export default definePlugin({
         });
 
         const channel = createEventChannel<OpenBotEvent>();
+        let runError: string | null = null;
 
         const run = runVideoAgent({
           prompt: event.data.content,
@@ -171,6 +172,7 @@ export default definePlugin({
                     title: title || text,
                     body: text,
                     display: 'collapsed',
+                    variant: 'basic'
                   },
                 }),
               );
@@ -183,13 +185,7 @@ export default definePlugin({
         })
           .catch((error) => {
             const message = error instanceof Error ? error.message : String(error);
-            channel.push(
-              agentOutput({
-                agentId: context.agentId,
-                content: `Video generation failed: ${message}`,
-                threadId,
-              }),
-            );
+            runError = message;
             return undefined;
           })
           .finally(() => channel.close());
@@ -200,43 +196,52 @@ export default definePlugin({
 
         const result = await run;
 
-        if (result?.videoPath) {
-          const relativeVideoPath = path.relative(
-            path.resolve(outDir),
-            path.resolve(result.videoPath),
-          );
-          const serveData = encodeURIComponent(
-            JSON.stringify({ path: relativeVideoPath }),
-          );
-
-          yield uiWidget({
+        if (runError) {
+          yield agentOutput({
             agentId: context.agentId,
+            content: `Video generation failed: ${runError}`,
             threadId,
-            widget: {
-              kind: 'media',
-              title: 'Your video is ready',
-              layout: 'single',
-              size: "medium",
-              items: [
-                {
-                  type: 'video',
-                  // @ts-ignore
-                  url: `${context?.publicBaseUrl}/api/state?channelId=${channelId}&type=action:storage:serve-file&data=${serveData}`,
-                  title: event.data.content,
-                },
-              ],
-            },
           });
+          return;
         }
 
-        yield agentOutput({
+        if (!result || !result.videoPath) {
+          yield agentOutput({
+            agentId: context.agentId,
+            content: `Video generation failed: ${result?.text || 'No video was produced.'}`,
+            threadId,
+          });
+          return;
+        }
+
+        const relativeVideoPath = path.relative(
+          path.resolve(outDir),
+          path.resolve(result.videoPath),
+        );
+        const serveData = encodeURIComponent(
+          JSON.stringify({ path: relativeVideoPath }),
+        );
+
+        yield uiWidget({
           agentId: context.agentId,
-          content: result?.text || 'Done.',
           threadId,
+          widget: {
+            kind: 'media',
+            title: 'Your video is ready',
+            size: "medium",
+            items: [
+              {
+                type: 'video',
+                // @ts-ignore
+                url: `${context?.publicBaseUrl}/api/state?channelId=${channelId}&type=action:storage:serve-file&data=${serveData}`,
+              }
+            ],
+          },
         });
       });
 
       builder.on('client:ui:widget:response', async function* (event: any) {
+        console.log('client:ui:widget:response', event);
         const widgetId = event.data?.widgetId;
         if (widgetId !== 'remotion-llm-config' && widgetId !== 'remotion-openai-config') return;
 
